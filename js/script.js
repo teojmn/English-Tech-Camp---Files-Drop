@@ -70,53 +70,38 @@ class FileDropManager {
     }
 
     async fetchFiles() {
-        // Simulation d'une liste de fichiers
-        // En production, ceci pourrait être remplacé par un appel à une API
-        // ou par la lecture d'un fichier JSON contenant la liste des fichiers
-        return [
-            {
-                name: 'Exercices_Anglais_Niveau1.pdf',
-                size: '2.4 MB',
-                type: 'pdf',
-                date: '2025-06-10',
-                path: 'assets/Exercices_Anglais_Niveau1.pdf'
-            },
-            {
-                name: 'Vocabulary_List.docx',
-                size: '856 KB',
-                type: 'doc',
-                date: '2025-06-12',
-                path: 'assets/Vocabulary_List.docx'
-            },
-            {
-                name: 'Grammar_Rules.pdf',
-                size: '1.8 MB',
-                type: 'pdf',
-                date: '2025-06-08',
-                path: 'assets/Grammar_Rules.pdf'
-            },
-            {
-                name: 'Pronunciation_Guide.mp3',
-                size: '12.3 MB',
-                type: 'audio',
-                date: '2025-06-11',
-                path: 'assets/Pronunciation_Guide.mp3'
-            },
-            {
-                name: 'Sample_Conversation.mp4',
-                size: '45.2 MB',
-                type: 'video',
-                date: '2025-06-09',
-                path: 'assets/Sample_Conversation.mp4'
-            },
-            {
-                name: 'Course_Materials.zip',
-                size: '15.7 MB',
-                type: 'archive',
-                date: '2025-06-13',
-                path: 'assets/Course_Materials.zip'
+        try {
+            // Essayer de charger la liste automatique depuis files.json
+            const response = await fetch('assets/files.json');
+            if (response.ok) {
+                const files = await response.json();
+                console.log('✅ Fichiers chargés automatiquement depuis files.json');
+                return files;
+            } else {
+                throw new Error('Fichier files.json non trouvé');
             }
-        ];
+        } catch (error) {
+            console.log('⚠️ Chargement automatique échoué, utilisation de la liste manuelle');
+            // Liste des fichiers réels dans le dossier assets
+            // Modifiez cette liste selon vos fichiers ou utilisez le script generate-filelist.sh
+            return [
+                {
+                    name: 'CleanShot 2025-06-12 at 17.18.34.mp4',
+                    size: '6.2 MB',
+                    type: 'mp4',
+                    date: '2025-06-12',
+                    path: 'assets/CleanShot 2025-06-12 at 17.18.34.mp4'
+                }
+                // Ajoutez vos autres fichiers ici au format :
+                // {
+                //     name: 'nom_du_fichier.extension',
+                //     size: 'taille (ex: 2.4 MB)',
+                //     type: 'extension',
+                //     date: 'YYYY-MM-DD',
+                //     path: 'assets/nom_du_fichier.extension'
+                // }
+            ];
+        }
     }
 
     getFileIcon(type) {
@@ -335,8 +320,14 @@ class FileInstructions {
 🎯 ENGLISH TECH CAMP - FILE DROP
 ================================
 
-Pour ajouter des fichiers à télécharger :
+🚀 DEUX MÉTHODES pour ajouter des fichiers :
 
+MÉTHODE 1 - AUTOMATIQUE (Recommandée) :
+1. 📁 Placez vos fichiers dans le dossier 'assets/'
+2. 🔧 Exécutez : ./generate-filelist.sh
+3. ✅ Le fichier files.json sera créé automatiquement !
+
+MÉTHODE 2 - MANUELLE :
 1. 📁 Placez vos fichiers dans le dossier 'assets/'
 2. 📝 Modifiez la méthode 'fetchFiles()' dans js/script.js
 3. ➕ Ajoutez vos fichiers à la liste avec le format :
@@ -356,7 +347,8 @@ Types de fichiers supportés :
 • 📦 Archives : zip, rar, 7z
 • 💻 Code : js, html, css
 
-L'interface se mettra automatiquement à jour !
+✨ Le système charge automatiquement files.json si disponible,
+   sinon utilise la liste manuelle !
         `);
     }
 }
