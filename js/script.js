@@ -184,7 +184,6 @@ class FileDropManager {
                         <h3>${file.name}</h3>
                         <div class="file-meta">
                             <span class="file-size">${file.size}</span>
-                            <span class="file-date">${formattedDate}</span>
                         </div>
                         <button class="download-btn" onclick="fileManager.downloadFile('${file.path}', '${file.name}')">
                             <i class="fas fa-download"></i>
