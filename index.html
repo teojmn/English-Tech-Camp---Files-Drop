@@ -44,7 +44,10 @@
     <script>
         // Liste des fichiers dans le dossier "assets"
         const files = [
-            "The_Last_Office_1.3.zip" 
+            {
+                name: "The_Last_Office_1.3.zip",
+                url: "https://github.com/teojmn/English-Tech-Camp---Files-Drop/releases/download/v1.3/The_Last_Office_1.3.zip"
+            }
         ];
 
         const fileList = document.getElementById('file-list');
@@ -61,6 +64,7 @@
             'xlsx': 'fa-file-excel',
             'ppt': 'fa-file-powerpoint',
             'pptx': 'fa-file-powerpoint',
+            'zip': 'fa-file-archive'
         };
 
         // Générer la liste des fichiers
@@ -70,13 +74,13 @@
             const icon = document.createElement('i');
 
             // Définir l'icône en fonction du type de fichier
-            const fileExtension = file.split('.').pop().toLowerCase();
+            const fileExtension = file.name.split('.').pop().toLowerCase();
             icon.className = `fas ${iconClasses[fileExtension] || 'fa-file'} file-icon`;
 
             // Définir le lien de téléchargement
-            link.href = `assets/${encodeURIComponent(file)}`;
-            link.textContent = file;
-            link.download = file;
+            link.href = file.url;
+            link.textContent = file.name;
+            link.download = file.name;
 
             listItem.appendChild(icon);
             listItem.appendChild(link);
