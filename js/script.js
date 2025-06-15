@@ -74,7 +74,8 @@ class FileDropManager {
         
         // 📋 LISTE DE VOS FICHIERS - Ajoutez simplement le nom de vos nouveaux fichiers ici !
         const fileList = [
-            'The Last Office 1.3.zip'
+            'The Last Office 1.3.zip',
+            'The_Last_Office_1.3.zip',
             // 👆 Ajoutez vos nouveaux fichiers ici, un par ligne
             // Exemple :
             // 'mon_document.pdf',
