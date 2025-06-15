@@ -70,38 +70,68 @@ class FileDropManager {
     }
 
     async fetchFiles() {
-        try {
-            // Essayer de charger la liste automatique depuis files.json
-            const response = await fetch('assets/files.json');
-            if (response.ok) {
-                const files = await response.json();
-                console.log('✅ Fichiers chargés automatiquement depuis files.json');
-                return files;
-            } else {
-                throw new Error('Fichier files.json non trouvé');
-            }
-        } catch (error) {
-            console.log('⚠️ Chargement automatique échoué, utilisation de la liste manuelle');
-            // Liste des fichiers réels dans le dossier assets
-            // Modifiez cette liste selon vos fichiers ou utilisez le script generate-filelist.sh
-            return [
-                {
-                    name: 'CleanShot 2025-06-12 at 17.18.34.mp4',
-                    size: '6.2 MB',
-                    type: 'mp4',
-                    date: '2025-06-12',
-                    path: 'assets/CleanShot 2025-06-12 at 17.18.34.mp4'
+        console.log('🔍 Détection intelligente des fichiers (site statique)...');
+        
+        // 📋 LISTE DE VOS FICHIERS - Ajoutez simplement le nom de vos nouveaux fichiers ici !
+        const fileList = [
+            'The Last Office 1.3.zip'
+            // 👆 Ajoutez vos nouveaux fichiers ici, un par ligne
+            // Exemple :
+            // 'mon_document.pdf',
+            // 'ma_video.mp4',
+            // 'mon_audio.mp3',
+        ];
+        
+        const detectedFiles = [];
+        console.log(`🔎 Test de ${fileList.length} fichier(s) potentiel(s)...`);
+        
+        // Tester l'existence de chaque fichier de la liste
+        for (const filename of fileList) {
+            try {
+                const filePath = `assets/${filename}`;
+                const response = await fetch(filePath, { method: 'HEAD' });
+                
+                if (response.ok) {
+                    // Fichier existe ! Récupérer les informations
+                    const size = response.headers.get('content-length');
+                    const lastModified = response.headers.get('last-modified');
+                    const extension = this.getFileExtension(filename);
+                    
+                    const fileInfo = {
+                        name: filename,
+                        size: size ? this.formatBytes(parseInt(size)) : 'Inconnu',
+                        type: extension,
+                        date: lastModified ? new Date(lastModified).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                        path: filePath
+                    };
+                    
+                    detectedFiles.push(fileInfo);
+                    console.log(`✅ ${filename} détecté (${fileInfo.size})`);
+                } else {
+                    console.log(`❌ ${filename} non trouvé`);
                 }
-                // Ajoutez vos autres fichiers ici au format :
-                // {
-                //     name: 'nom_du_fichier.extension',
-                //     size: 'taille (ex: 2.4 MB)',
-                //     type: 'extension',
-                //     date: 'YYYY-MM-DD',
-                //     path: 'assets/nom_du_fichier.extension'
-                // }
-            ];
+            } catch (error) {
+                console.log(`⚠️ Erreur test ${filename}:`, error.message);
+            }
         }
+        
+        // Trier par nom
+        detectedFiles.sort((a, b) => a.name.localeCompare(b.name));
+        
+        console.log(`🎯 ${detectedFiles.length} fichier(s) disponible(s) !`);
+        return detectedFiles;
+    }
+
+    getFileExtension(filename) {
+        return filename.split('.').pop().toLowerCase();
+    }
+
+    formatBytes(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
     }
 
     getFileIcon(type) {
@@ -312,31 +342,46 @@ class FileDropManager {
     }
 }
 
-// Instructions pour ajouter des fichiers
+// Instructions pour ajouter des fichiers - SYSTÈME STATIQUE SIMPLIFIÉ
 class FileInstructions {
     static show() {
         console.log(`
-🎯 ENGLISH TECH CAMP - FILE DROP
-================================
+🎯 ENGLISH TECH CAMP - FILE DROP (Site Statique)
+===============================================
 
-🚀 DEUX MÉTHODES pour ajouter des fichiers :
+✨ SYSTÈME ULTRA-SIMPLE - Aucun serveur requis !
 
-MÉTHODE 1 - AUTOMATIQUE (Recommandée) :
+🚀 COMMENT AJOUTER DES FICHIERS :
+
 1. 📁 Placez vos fichiers dans le dossier 'assets/'
-2. 🔧 Exécutez : ./generate-filelist.sh
-3. ✅ Le fichier files.json sera créé automatiquement !
+   
+2. � Ouvrez 'js/script.js' et trouvez la ligne ~78 :
+   const fileList = [
+       'The_Last_Office.exe',
+       'CleanShot 2025-06-12 at 17.18.34.mp4',
+       // � Ajoutez le nom de vos nouveaux fichiers ici
+   ];
 
-MÉTHODE 2 - MANUELLE :
-1. 📁 Placez vos fichiers dans le dossier 'assets/'
-2. 📝 Modifiez la méthode 'fetchFiles()' dans js/script.js
-3. ➕ Ajoutez vos fichiers à la liste avec le format :
-   {
-       name: 'nom_du_fichier.extension',
-       size: 'taille (ex: 2.4 MB)',
-       type: 'extension (pdf, doc, mp3, etc.)',
-       date: 'YYYY-MM-DD',
-       path: 'assets/nom_du_fichier.extension'
-   }
+3. ➕ Ajoutez simplement le nom de votre fichier :
+   const fileList = [
+       'The_Last_Office.exe',
+       'CleanShot 2025-06-12 at 17.18.34.mp4',
+       'mon_nouveau_fichier.pdf',  // ← Ajouté !
+   ];
+
+4. 💾 Sauvegardez le fichier
+
+✅ C'est tout ! Le système détecte automatiquement :
+• La taille du fichier
+• La date de modification  
+• Le type et l'icône appropriée
+• La disponibilité du téléchargement
+
+📱 AVANTAGES :
+• Aucun serveur requis
+• Hébergement gratuit (GitHub Pages, Netlify)
+• Site 100% statique
+• Maintenance ultra-simple
 
 Types de fichiers supportés :
 • 📄 Documents : pdf, doc, docx
@@ -344,10 +389,10 @@ Types de fichiers supportés :
 • 🎥 Vidéos : mp4, avi, mov
 • 🎵 Audio : mp3, wav
 • 📦 Archives : zip, rar, 7z
+• 💻 Exécutables : exe
 • 💻 Code : js, html, css
 
-✨ Le système charge automatiquement files.json si disponible,
-   sinon utilise la liste manuelle !
+🎉 Site prêt pour GitHub Pages, Netlify, Vercel !
         `);
     }
 }
