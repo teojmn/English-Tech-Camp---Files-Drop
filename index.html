@@ -3,87 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Tech Camp - File Drop</title>
-    
-    <!-- Font Awesome pour les icônes -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- CSS personnalisé -->
-    <link rel="stylesheet" href="css/style.css">
+    <title>Liste des fichiers</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #007BFF;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+        }
+        a {
+            text-decoration: none;
+            color: #007BFF;
+            font-size: 18px;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .file-icon {
+            margin-right: 10px;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <div class="header-content">
-                <h1 class="title">
-                    <i class="fas fa-download"></i>
-                    English Tech Camp
-                </h1>
-                <p class="subtitle">Files Drop</p>
-            </div>
-        </header>
+    <h1>Liste des fichiers</h1>
+    <ul id="file-list"></ul>
 
-        <main class="main-content">
-            <div class="file-section">
-                <div class="section-header">
-                    <h2><i class="fas fa-folder-open"></i> Fichiers disponibles</h2>
-                    <div class="file-count">
-                        <span id="fileCount">0</span> fichier(s)
-                    </div>
-                </div>
-                
-                <div class="search-bar">
-                    <div class="search-container">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="Rechercher des fichiers...">
-                    </div>
-                </div>
+    <script>
+        // Liste des fichiers dans le dossier "assets"
+        const files = [
+            "The_Last_Office_1.3.zip" 
+        ];
 
-                <div class="file-grid" id="fileGrid">
-                    <!-- Les fichiers seront chargés dynamiquement ici -->
-                </div>
+        const fileList = document.getElementById('file-list');
 
-                <div class="empty-state" id="emptyState" style="display: none;">
-                    <div class="empty-icon">
-                        <i class="fas fa-folder-open"></i>
-                    </div>
-                    <h3>Aucun fichier disponible</h3>
-                    <p>Les fichiers seront affichés ici une fois ajoutés au dossier assets.</p>
-                </div>
+        // Icônes associées aux types de fichiers
+        const iconClasses = {
+            'mp4': 'fa-file-video',
+            'jpg': 'fa-file-image',
+            'png': 'fa-file-image',
+            'pdf': 'fa-file-pdf',
+            'doc': 'fa-file-word',
+            'docx': 'fa-file-word',
+            'xls': 'fa-file-excel',
+            'xlsx': 'fa-file-excel',
+            'ppt': 'fa-file-powerpoint',
+            'pptx': 'fa-file-powerpoint',
+        };
 
-                <div class="loading-state" id="loadingState">
-                    <div class="loading-spinner">
-                        <i class="fas fa-spinner fa-spin"></i>
-                    </div>
-                    <p>Chargement des fichiers...</p>
-                </div>
-            </div>
-        </main>
+        // Générer la liste des fichiers
+        files.forEach(file => {
+            const listItem = document.createElement('li');
+            const link = document.createElement('a');
+            const icon = document.createElement('i');
 
-        <footer class="footer">
-            <p>&copy; 2025 POPSTAR Studio. Tous droits réservés.</p>
-        </footer>
-    </div>
+            // Définir l'icône en fonction du type de fichier
+            const fileExtension = file.split('.').pop().toLowerCase();
+            icon.className = `fas ${iconClasses[fileExtension] || 'fa-file'} file-icon`;
 
-    <!-- Modal de téléchargement -->
-    <div class="modal" id="downloadModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Téléchargement en cours</h3>
-                <button class="modal-close" id="modalClose">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="download-progress">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                    <p id="downloadStatus">Préparation du téléchargement...</p>
-                </div>
-            </div>
-        </div>
-    </div>
+            // Définir le lien de téléchargement
+            link.href = `assets/${encodeURIComponent(file)}`;
+            link.textContent = file;
+            link.download = file;
 
-    <script src="js/script.js"></script>
+            listItem.appendChild(icon);
+            listItem.appendChild(link);
+            fileList.appendChild(listItem);
+        });
+    </script>
 </body>
 </html>
